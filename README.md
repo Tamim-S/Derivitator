@@ -34,7 +34,9 @@ derivitator/
 ├── templates/
 │   └── index.html      # Frontend UI
 ├── requirements.txt
+├── LICENSE
 └── README.md
+
 ```
 
 ## Notes / assumptions
