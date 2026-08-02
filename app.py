@@ -22,10 +22,7 @@ from sympy.printing.str import StrPrinter
 
 app = Flask(__name__)
 
-# ---------------------------------------------------------------------------
 # Symbolic setup
-# ---------------------------------------------------------------------------
-
 X = sympy.Symbol("x", real=True)
 
 TRANSFORMATIONS = standard_transformations + (
@@ -38,7 +35,7 @@ def _natural_log(arg):
     # Both log(x) and ln(x) are treated as the natural logarithm.
     return sympy.log(arg)
 
-
+# Terms dictionary
 LOCAL_DICT = {
     "x": X,
     "e": sympy.E,
@@ -60,11 +57,11 @@ LOCAL_DICT = {
 _ALLOWED_INPUT = re.compile(r"^[0-9a-zA-Z\s\+\-\*\/\^\(\)\.\,\_]*$")
 MAX_INPUT_LENGTH = 200
 
-
+# Errors
 class DifferentiationError(Exception):
     """Any user-facing failure: bad syntax, unsupported variable, etc."""
 
-
+# Class for fractions
 class FractionPrinter(StrPrinter):
     """
     sympy's default printer renders x**-1 as '1/x' but x**-2 as 'x**(-2)'.
@@ -125,7 +122,7 @@ def format_expression(expr):
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
-
+# Creates an error for functions not of x, too long input, or syntax errors
 def _validate_raw_input(raw):
     if not isinstance(raw, str):
         raise DifferentiationError("Please enter a function of x.")
@@ -141,7 +138,7 @@ def _validate_raw_input(raw):
         )
     return cleaned
 
-
+# Breaks down words into code for output purposes
 def parse_function(raw):
     cleaned = _validate_raw_input(raw)
     try:
@@ -165,7 +162,7 @@ def parse_function(raw):
 
     return expr
 
-
+# Timeout error
 class _TimeoutError(Exception):
     pass
 
@@ -192,7 +189,7 @@ def _simplify_with_timeout(expr, seconds=5):
         signal.alarm(0)
         signal.signal(signal.SIGALRM, previous_handler)
 
-
+# Uses SymPy and finds the derivative
 def differentiate(raw):
     """Returns (original_display, derivative_display). Raises DifferentiationError."""
     expr = parse_function(raw)
@@ -207,11 +204,9 @@ def differentiate(raw):
     return format_expression(expr), format_expression(derivative)
 
 
-# ---------------------------------------------------------------------------
 # Routes
-# ---------------------------------------------------------------------------
 
-
+# Links app.py to index.html
 @app.route("/")
 def index():
     return render_template("index.html")
